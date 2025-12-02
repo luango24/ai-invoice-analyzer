@@ -101,9 +101,32 @@ dotnet build
 dotnet run --project GmailInvoiceAnalyzer
 
 
-Configure Gmail and AI settings in:
+🔧 Configuration (appsettings.sample.json)
 
-/Config/appsettings.json
+Before running the console application, create a local appsettings.json based on the included template:
+
+GmailInvoiceAnalyzer/Config/appsettings.sample.json
+
+
+Copy it to:
+
+GmailInvoiceAnalyzer/Config/appsettings.json
+
+
+and update the values according to your environment.
+
+Configuration fields explained:
+
+Setting,Description
+SecretJsonFile,Full path to your Google API credentials JSON. This file never goes into Git.
+QueryString,"Gmail search query used to locate invoice emails (e.g., filter by date, attachments, or sender)."
+ModelName,Name of the model to use in Ollama (must match ollama pull <model>).
+BaseAddress,URL where Ollama is running locally.
+RequestTimeoutMinutes,Timeout for AI categorization and summarization.
+WorkingFolder,Folder used to store downloaded PDFs and intermediate files.
+TaskCounter,Parallelism level for PDF parsing.
+PrompCounter,Parallelism level for AI calls (SemaphoreSlim).
+DownloadInvoice,true = download PDFs from Gmail; false = process only local PDFs.
 
 📝 License
 

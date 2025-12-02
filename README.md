@@ -1,98 +1,64 @@
-📄 AI Invoice Analyzer (C# Version)
+# 📄 AI Invoice Analyzer (C# Version)
 
-A technical implementation of a Gmail-driven invoice extraction and processing workflow.
+A technical implementation of a Gmail-driven invoice extraction and processing workflow.  
 This project fetches invoice PDFs from Gmail, parses structured financial data, and generates summary reports.
-It serves as the C# implementation, with a Python version planned for later.
 
-⚙️ Technical Overview
-✔️ Core Capabilities
+This is the **C# implementation**, built for modularity and integration with local LLMs (via **Ollama**).
 
-Authenticates with Gmail API using OAuth 2.0
+---
 
-Queries and downloads invoice-related emails
+## ⚙️ Technical Overview
 
-Extracts PDF attachments and parses:
+### Core Capabilities
+- **Email Automation:** Connects to Gmail API, queries inbox, downloads invoice PDFs.
+- **Data Extraction:** Parses Vendor, Invoice ID, Dates, Line Items, and Totals.
+- **AI Enhancement:** Optional LLM categorization + executive summaries via Ollama.
+- **Reporting:** HTML summaries generated under `/Reports`.
+- **Observability:** Logging via Serilog in `/logs`.
 
-Vendor information
+---
 
-Invoice ID
+## 🚀 Execution Pipeline
 
-Dates
+The main workflow is orchestrated by **Manager.cs**:
 
-Line items
+1. Load configuration from *appsettings.json*  
+2. Authenticate Gmail using OAuth  
+3. (Optional) Download PDFs using Gmail query filters  
+4. Parse invoice PDFs → `InvoiceData`  
+5. (Optional) Categorize items + summarize via Local AI  
+6. Generate HTML reports
 
-Totals
+---
 
-Generates HTML reports (standard + IA-enhanced version)
+## 🧱 Project Structure
 
-Integrates optional local AI (via Ollama) or cloud AI (via OpenAI API)
-
-Includes structured logging to /logs directory
-
-📐 Architecture
-
+### 📐 Directory Tree
 ```text
 GmailInvoiceAnalyzer/
-|-- Config/
-|   |-- appsettings.json (runtime config)
-|-- Models/
-|   |-- InvoiceData.cs
-|   |-- InvoiceItem.cs
-|   |-- YearlyExpenseSummary.cs
-|-- PDF/
-|   |-- InvoiceParser.cs
-|   |-- Helpers/
-|-- Reports/
-|   |-- ReportGenerator.cs
-|-- Services/
-|   |-- GmailServiceWrapper.cs
-|   |-- AiAnalyzer.cs
-|-- Program.cs
+├── Config/
+│   └── appsettings.json
+├── Models/
+│   ├── InvoiceData.cs
+│   ├── InvoiceItem.cs
+│   └── YearlyExpenseSummary.cs
+├── PDF/
+│   ├── InvoiceParser.cs
+│   └── Helpers/
+├── Reports/
+│   └── ReportGenerator.cs
+├── Services/
+│   ├── GmailServiceWrapper.cs
+│   └── AiAnalyzer.cs
+└── Program.cs
 
-🧱 Layer Responsibilities
-
-Services/
-API integration, AI orchestration, Gmail operations.
-
-PDF/
-PDF extraction, text normalization, parsing helpers.
-
-Reports/
-HTML output generation.
-
-Models/
-Strongly-typed data structures used throughout the pipeline.
-
-🚀 How It Works
-
-Load Configuration
-Reads Settings from appsettings.json.
-
-Authenticate Gmail API
-Uses OAuth token storage and refresh credentials.
-
-Search for Invoice Emails
-Filters incoming messages using Gmail query strings.
-
-Download Attachments
-Saves PDFs locally using a deterministic naming scheme.
-
-Parse Invoice PDF
-Uses a custom text extraction + pattern matching flow.
-
-AI Enhancement (Optional)
-Sends extracted text to AI for enrichment or error correction.
-
-Generate Reports
-Produces summary HTML pages under /Reports.
-
-🛠️ Requirements
+## 🛠️ Requirements
 
 .NET 8 SDK or later
 
-Gmail API credentials (credentials.json)
+Google Gmail API credentials (credentials.json)
 
-(Optional) Local AI engine via Ollama
+(Optional) Ollama installed and running for local AI
 
 (Optional) OpenAI API key
 
@@ -100,89 +66,49 @@ Gmail API credentials (credentials.json)
 dotnet build
 dotnet run --project GmailInvoiceAnalyzer
 
+## 🔧 Configuration (appsettings.sample.json)
 
-🔧 Configuration (appsettings.sample.json)
-
-Before running the console application, create a local appsettings.json based on the included template:
+Copy the template:
 
 GmailInvoiceAnalyzer/Config/appsettings.sample.json
 
 
-Copy it to:
+Rename it to:
 
 GmailInvoiceAnalyzer/Config/appsettings.json
 
+### Configuration Fields
+**Setting:**	Description
+**SecretJsonFile:**	Full path to Google credentials JSON (never commit it).
+**QueryString:**	Gmail query for filtering invoice emails.
+**ModelName:**	Ollama model to run (e.g., llama3.2).
+**BaseAddress:**	URL for local Ollama instance.
+**RequestTimeoutMinutes:**	AI call timeout.
+**WorkingFolder:**	Local folder for PDFs + output.
+**TaskCounter:**	Parallelism for PDF parsing.
+**PrompCounter:**	Parallelism for AI calls.
+**DownloadInvoice:**	true = download from Gmail; false = use local PDFs.
 
-and update the values according to your environment.
-
-Configuration fields explained:
-
-Setting: Description
-SecretJsonFile: Full path to your Google API credentials JSON. This file never goes into Git.
-QueryString: "Gmail search query used to locate invoice emails (e.g., filter by date, attachments, or sender)."
-ModelName: Name of the model to use in Ollama (must match ollama pull <model>).
-BaseAddress: URL where Ollama is running locally.
-RequestTimeoutMinutes: Timeout for AI categorization and summarization.
-WorkingFolder: Folder used to store downloaded PDFs and intermediate files.
-TaskCounter: Parallelism level for PDF parsing.
-PrompCounter: Parallelism level for AI calls (SemaphoreSlim).
-DownloadInvoice: true = download PDFs from Gmail; false = process only local PDFs.
-
-🧰 Tech Stack
-
-This project combines Gmail automation, PDF parsing, and Local LLM processing using a clean and modular C# architecture.
-
-Core Technologies
+## 🧰 Tech Stack Highlights
 Area	Technology	Purpose
-Language & Runtime	C# (.NET 8+)	Main application logic, services, PDF parsing, reporting.
-AI / LLM Integration	Ollama + Llama 3.2	Local inference for categorization and executive summaries.
-Google API	Google Gmail API (.NET SDK)	Read inbox messages, filter invoice emails, download attachments.
-PDF Processing	iText 7 (via PdfReader) or your implemented parser	Extract invoice text, items, totals, dates.
-Logging	Serilog	Structured logs stored in local /logs folder.
-HTML Reports	Custom HTML generator	Creates summary and AI-assisted reports in /Reports.
-Project Structure Highlights
+Language & Runtime	C# (.NET 8+)	Core services, parsing, logic
+AI Integration	Ollama + Llama 3.2	Categorization + summarization
+Google API	Gmail API (.NET SDK)	Read emails + download attachments
+PDF Processing	Custom Parser	Extract invoice information
+Logging	Serilog	Structured logs in /logs
 
-The application follows a clean separation of concerns:
+✔️ Why Local AI?
 
-Services
+Keeps data private
 
-GmailServiceWrapper: Gmail access + attachment retrieval
+No cloud token cost
 
-AiAnalyzer: Local LLM communication (categorization & summarization)
+Very low latency
 
-PDF Layer
+Ideal for categorization + summaries
 
-InvoiceParser: Extracts provider, invoice number, date, and line items
+Fully offline capability
 
-Core Logic
+## 📝 License
 
-Manager.cs: Main workflow (download → parse → analyze → summarize → report)
-
-Models
-Represent invoices, items, yearly totals, and settings.
-
-AI Integration
-
-Uses OllamaSharp to communicate with a local Ollama server
-
-Automatically checks:
-
-whether Ollama is running
-
-whether the required model exists
-
-Supports parallel prompts using SemaphoreSlim
-
-Compatible with any local model that follows simple text prompt structure
-
-Why Local AI?
-
-✔️ No cloud dependencies
-✔️ Keeps data private
-✔️ Fast iterative development
-✔️ No cost per token
-✔️ Ideal for invoice categorization and summarization workflows
-
-📝 License
-
-MIT License.
+MIT License

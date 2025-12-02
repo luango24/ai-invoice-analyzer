@@ -30,22 +30,24 @@ Integrates optional local AI (via Ollama) or cloud AI (via OpenAI API)
 Includes structured logging to /logs directory
 
 📐 Architecture
+
+```text
 GmailInvoiceAnalyzer/
-├── Config/
-│ └── appsettings.json (runtime config)
-├── Models/
-│ ├── InvoiceData.cs
-│ ├── InvoiceItem.cs
-│ └── YearlyExpenseSummary.cs
-├── PDF/
-│ ├── InvoiceParser.cs
-│ └── Helpers/
-├── Reports/
-│ └── ReportGenerator.cs
-├── Services/
-│ ├── GmailServiceWrapper.cs
-│ └── AiAnalyzer.cs
-└── Program.cs
+|-- Config/
+|   |-- appsettings.json (runtime config)
+|-- Models/
+|   |-- InvoiceData.cs
+|   |-- InvoiceItem.cs
+|   |-- YearlyExpenseSummary.cs
+|-- PDF/
+|   |-- InvoiceParser.cs
+|   |-- Helpers/
+|-- Reports/
+|   |-- ReportGenerator.cs
+|-- Services/
+|   |-- GmailServiceWrapper.cs
+|   |-- AiAnalyzer.cs
+|-- Program.cs
 
 🧱 Layer Responsibilities
 

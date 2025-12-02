@@ -128,6 +128,61 @@ TaskCounter: Parallelism level for PDF parsing.
 PrompCounter: Parallelism level for AI calls (SemaphoreSlim).
 DownloadInvoice: true = download PDFs from Gmail; false = process only local PDFs.
 
+🧰 Tech Stack
+
+This project combines Gmail automation, PDF parsing, and Local LLM processing using a clean and modular C# architecture.
+
+Core Technologies
+Area	Technology	Purpose
+Language & Runtime	C# (.NET 8+)	Main application logic, services, PDF parsing, reporting.
+AI / LLM Integration	Ollama + Llama 3.2	Local inference for categorization and executive summaries.
+Google API	Google Gmail API (.NET SDK)	Read inbox messages, filter invoice emails, download attachments.
+PDF Processing	iText 7 (via PdfReader) or your implemented parser	Extract invoice text, items, totals, dates.
+Logging	Serilog	Structured logs stored in local /logs folder.
+HTML Reports	Custom HTML generator	Creates summary and AI-assisted reports in /Reports.
+Project Structure Highlights
+
+The application follows a clean separation of concerns:
+
+Services
+
+GmailServiceWrapper: Gmail access + attachment retrieval
+
+AiAnalyzer: Local LLM communication (categorization & summarization)
+
+PDF Layer
+
+InvoiceParser: Extracts provider, invoice number, date, and line items
+
+Core Logic
+
+Manager.cs: Main workflow (download → parse → analyze → summarize → report)
+
+Models
+Represent invoices, items, yearly totals, and settings.
+
+AI Integration
+
+Uses OllamaSharp to communicate with a local Ollama server
+
+Automatically checks:
+
+whether Ollama is running
+
+whether the required model exists
+
+Supports parallel prompts using SemaphoreSlim
+
+Compatible with any local model that follows simple text prompt structure
+
+Why Local AI?
+
+✔️ No cloud dependencies
+✔️ Keeps data private
+✔️ Fast iterative development
+✔️ No cost per token
+✔️ Ideal for invoice categorization and summarization workflows
+
 📝 License
 
 MIT License.
